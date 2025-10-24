@@ -1,0 +1,35 @@
+{
+	"compilerOptions": {
+		// Module Configuration
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"resolvePackageJsonExports": true,
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"allowImportingTsExtensions": true,
+		"isolatedModules": true,
+
+		// Target
+		"target": "ESNext",
+		"lib": ["ESNext", "DOM"],
+		"baseUrl": "./",
+
+		// other options
+		"checkJs": false,
+		"skipLibCheck": true,
+		"noEmit": true,
+
+		// Strict Type Checking
+		"strict": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true,
+
+		// Additional Checks
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noImplicitOverride": true,
+		"exactOptionalPropertyTypes": true,
+		"noUncheckedIndexedAccess": true
+	}
+}

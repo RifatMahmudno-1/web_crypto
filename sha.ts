@@ -5,7 +5,7 @@ async function sha(data: BufferSource, algorithm: 'SHA-256' | 'SHA-384' | 'SHA-5
 	const byteArray = new Uint8Array(byteBuffer)
 	let hex = ''
 	for (let i = 0; i < byteArray.length; i++) {
-		hex += byteArray[i].toString(16).padStart(2, '0')
+		hex += byteArray[i]!.toString(16).padStart(2, '0')
 	}
 	return hex
 }
