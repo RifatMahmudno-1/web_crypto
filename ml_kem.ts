@@ -5,7 +5,9 @@ const webcrypto = globalThis.crypto
  * @param algorithm the ML-KEM algorithm to use, either 'ML-KEM-1024' or 'ML-KEM-768'
  * @returns a CryptoKeyPair containing the generated public and private keys
  */
-export async function generateMLKEMKeyPair(algorithm: 'ML-KEM-1024' | 'ML-KEM-768'): Promise<CryptoKeyPair> {
+export async function generateMLKEMKeyPair(
+	algorithm: 'ML-KEM-1024' | 'ML-KEM-768'
+): Promise<CryptoKeyPair> {
 	const keyPair = await webcrypto.subtle.generateKey(
 		{ name: algorithm },
 		true,
@@ -20,8 +22,13 @@ export async function generateMLKEMKeyPair(algorithm: 'ML-KEM-1024' | 'ML-KEM-76
  * @param key the CryptoKey to export
  * @returns the Base64 encoded string representation of the key
  */
-export async function exportKeyToString(key: CryptoKeyPair['publicKey'] | CryptoKeyPair['privateKey']) {
-	const keyBuffer = await webcrypto.subtle.exportKey(key.type === 'public' ? 'spki' : 'pkcs8', key)
+export async function exportKeyToString(
+	key: CryptoKeyPair['publicKey'] | CryptoKeyPair['privateKey']
+) {
+	const keyBuffer = await webcrypto.subtle.exportKey(
+		key.type === 'public' ? 'spki' : 'pkcs8',
+		key
+	)
 	return arrayBufferToBase64(keyBuffer)
 }
 
@@ -32,7 +39,11 @@ export async function exportKeyToString(key: CryptoKeyPair['publicKey'] | Crypto
  * @param type the type of key to import, either 'publicKey' or 'privateKey'
  * @returns a CryptoKey representing the imported key
  */
-export async function importKeyFromString(keyString: string, algorithm: 'ML-KEM-1024' | 'ML-KEM-768', type: 'publicKey' | 'privateKey') {
+export async function importKeyFromString(
+	keyString: string,
+	algorithm: 'ML-KEM-1024' | 'ML-KEM-768',
+	type: 'publicKey' | 'privateKey'
+) {
 	const keyBuffer = base64ToArrayBuffer(keyString)
 
 	const key = await webcrypto.subtle.importKey(
@@ -52,9 +63,14 @@ export async function importKeyFromString(keyString: string, algorithm: 'ML-KEM-
  * @param publicKey the recipient's public key
  * @returns an object containing the ciphertext and shared key as ArrayBuffers
  */
-export async function encapsulateSecret(publicKey: CryptoKeyPair['publicKey']): Promise<{ ciphertext: ArrayBuffer; sharedKey: ArrayBuffer }> {
+export async function encapsulateSecret(
+	publicKey: CryptoKeyPair['publicKey']
+): Promise<{ ciphertext: ArrayBuffer; sharedKey: ArrayBuffer }> {
 	// @ts-ignore - not yet recognized by TypeScript
-	const { ciphertext, sharedKey } = await webcrypto.subtle.encapsulateBits({ name: publicKey.algorithm.name }, publicKey)
+	const { ciphertext, sharedKey } = await webcrypto.subtle.encapsulateBits(
+		{ name: publicKey.algorithm.name },
+		publicKey
+	)
 	return { ciphertext, sharedKey }
 }
 
@@ -64,9 +80,16 @@ export async function encapsulateSecret(publicKey: CryptoKeyPair['publicKey']): 
  * @param ciphertext the ciphertext to decapsulate
  * @returns the shared secret as an ArrayBuffer
  */
-export async function decapsulateSecret(privateKey: CryptoKeyPair['privateKey'], ciphertext: ArrayBuffer): Promise<ArrayBuffer> {
+export async function decapsulateSecret(
+	privateKey: CryptoKeyPair['privateKey'],
+	ciphertext: ArrayBuffer
+): Promise<ArrayBuffer> {
 	// @ts-ignore - not yet recognized by TypeScript
-	const sharedSecret = await webcrypto.subtle.decapsulateBits({ name: privateKey.algorithm.name }, privateKey, ciphertext)
+	const sharedSecret = await webcrypto.subtle.decapsulateBits(
+		{ name: privateKey.algorithm.name },
+		privateKey,
+		ciphertext
+	)
 	return sharedSecret
 }
 
@@ -103,12 +126,19 @@ export function base64ToArrayBuffer(base64: string) {
 /**
  * converts a base64 encoded key to PEM format
  * @param key actual key string in base64 format
- * @param keyType 'public' or 'private'
+ * @param keyType 'publicKey' or 'privateKey'
  * @returns PEM formatted key string
  */
-export function convertToPemFormat(key: string, keyType: 'public' | 'private') {
-	const pemHeader = keyType === 'public' ? 'PUBLIC KEY' : 'PRIVATE KEY'
-	const pemFormatted = [`-----BEGIN ${pemHeader}-----`, key.match(/.{1,64}/g)?.join('\n') || key, `-----END ${pemHeader}-----`].join('\n')
+export function convertToPemFormat(
+	key: string,
+	keyType: 'publicKey' | 'privateKey'
+) {
+	const pemHeader = keyType === 'publicKey' ? 'PUBLIC KEY' : 'PRIVATE KEY'
+	const pemFormatted = [
+		`-----BEGIN ${pemHeader}-----`,
+		key.match(/.{1,64}/g)?.join('\n') || key,
+		`-----END ${pemHeader}-----`
+	].join('\n')
 
 	return pemFormatted
 }
